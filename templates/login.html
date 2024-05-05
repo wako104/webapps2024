@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Log In - PayApp{% endblock %}
+{% block content %}
+    <div class="form-wrapper">
+        <h2>Log In</h2>
+        <form action="/login" method="post">
+            <div class="input-box">
+                <input type="email" placeholder="Email" required>
+                <i class='bx bx-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="Password" required>
+                <i class='bx bx-lock-alt' ></i>
+            </div>
+
+            <button type="submit" class="btn">Log In</button>
+
+            <div class="form-text">
+                <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+            </div>
+        </form>
+    </div>
+{% endblock %}
