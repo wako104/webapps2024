@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
 
 from .models import User, Transaction, Request
+from .utils import get_currency_symbol
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -60,21 +61,46 @@ class UserLoginForm(AuthenticationForm):
 
 
 class TransactionForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.helper = FormHelper(self)
+	receiver_username = forms.CharField(max_length=150, label="Payee", required=True)
 
 	class Meta:
 		model = Transaction
-		fields = ['receiver', 'amount']
+		fields = ['receiver_username', 'amount']
 
-
-class RequestForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.helper = FormHelper(self)
+		self.helper.layout = Layout(
+			Row(
+				Column('receiver_username', css_class='form-group'),
+				css_class='form-row mb-3'
+			),
+			Row(
+				Column('amount', css_class='form-group'),
+				css_class='form-row mb-3'
+			),
+			Submit('submit', 'Send Payment', css_class='btn btn-primary')
+		)
+
+
+class RequestForm(forms.ModelForm):
+	requestee_username = forms.CharField(max_length=150, label="Requestee", required=True)
 
 	class Meta:
 		model = Request
-		fields = ['requestee', 'amount']
+		fields = ['requestee_username', 'amount']
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.helper = FormHelper(self)
+		self.helper.layout = Layout(
+			Row(
+				Column('requestee_username', css_class='form-group'),
+				css_class='form-row mb-3'
+			),
+			Row(
+				Column('amount', css_class='form-group', prefix='£'),
+				css_class='form-row mb-3'
+			),
+			Submit('submit', 'Request Payment', css_class='btn btn-primary')
+		)

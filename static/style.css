@@ -57,6 +57,7 @@ nav {
 }
 
 .nav-links {
+    margin-bottom: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,10 +67,6 @@ nav {
 .nav-links li {
     /*display: inline-block;*/
     padding: 0 20px;
-}
-
-.nav-links ul {
-    padding: 0;
 }
 
 .nav-links li a {

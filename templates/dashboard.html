@@ -3,7 +3,7 @@
 
 {% block content %}
     <h2>Welcome, {{ user.username }}</h2>
-    <p>Current Balance: {{ user.balance }}</p>
+    <p>Current Balance: {{ currency_symbol }}{{ user.balance }}</p>
     <div class="row w-100 justify-content-around mb-5">
         <div class="col text-center">
             <a href="{% url 'send_payment' %}" class="btn btn-primary">Send Payment</a>
@@ -21,7 +21,7 @@
                         {% for transaction in transactions %}
                             {% if transaction.sender == user %}
                                 <li class="list-group-item">
-                                    Sent: {{ transaction.amount }} {{ user.currency }} to {{ transaction.receiver }} on {{ transaction.create_at|date:'d-m-Y H:i' }}
+                                    Sent: {{ transaction.amount }} {{ user.currency }} to {{ transaction.receiver }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
                                 </li>
                             {% else %}
                                 <li>
@@ -40,14 +40,14 @@
                 <div class="card-header">Requests</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for request in request %}
+                        {% for request in requests %}
                             {% if request.requester == user %}
-                                <li class="list-group-item">
-                                    Sent: {{ request.amount }} {{ user.currency }} from {{ request.requestee }} requested on {{ request.create_at|date:'d-m-Y H:i' }}
+                                <li class="list-group-item mb-2">
+                                    Sent: {{ request.amount }} {{ user.currency }} request sent to {{ request.requestee }} on {{ request.created_at|date:'d-m-Y H:i' }}
                                 </li>
                             {% else %}
-                                <li>
-                                    Received: {{ request.amount }} {{ user.currency }} to {{ request.requester }} on {{ request.created_at|date:'d-m-Y H:i' }}
+                                <li class="list-group-item mb-2">
+                                    Received: {{ request.amount }} {{ user.currency }} requested from {{ request.requester }} on {{ request.created_at|date:'d-m-Y H:i' }}
                                 </li>
                             {% endif %}
                         {% empty %}

@@ -5,8 +5,9 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 import requests
 
-from .models import User, Transaction, Request
+from .models import Transaction, Request, User
 from .forms import UserRegistrationForm, TransactionForm, RequestForm, UserLoginForm
+from .utils import get_currency_symbol, unauthenticated_user, convert_currency
 
 
 def home(request):
@@ -19,6 +20,7 @@ def initial_balance(currency):
 	return conversion.json().get('converted_amount', amount)
 
 
+@unauthenticated_user
 def register_view(request):
 	if request.method == 'POST':
 		form = UserRegistrationForm(request.POST)
@@ -34,6 +36,7 @@ def register_view(request):
 	return render(request, 'register.html', {'form': form})
 
 
+@unauthenticated_user
 def login_view(request):
 	if request.method == 'POST':
 		form = UserLoginForm(request, data=request.POST)
@@ -57,8 +60,13 @@ def logout_view(request):
 @login_required
 def dashboard_view(request):
 	transactions = Transaction.objects.filter(sender=request.user) | Transaction.objects.filter(receiver=request.user)
-	payment_requests = Request.objects.filter(requestee=request.user, fulfilled=False)
-	return render(request, 'dashboard.html', {'transactions': transactions, 'requests': payment_requests})
+	payment_requests = Request.objects.filter(requestee=request.user) | Request.objects.filter(requester=request.user)
+	currency_symbol = get_currency_symbol(request.user.currency)
+	return render(request, 'dashboard.html', {
+		'transactions': transactions,
+		'requests': payment_requests,
+		'currency_symbol': currency_symbol
+	})
 
 
 @login_required
@@ -66,19 +74,23 @@ def send_payment_view(request):
 	if request.method == 'POST':
 		form = TransactionForm(request.POST)
 		if form.is_valid():
-			receiver = form.cleaned_data['receiver']
-			amount = form.cleaned_data['amount']
-			if request.user.balance >= amount:
-				with transaction.atomic():
-					request.user.balance -= amount
-					receiver.balance += amount
-					request.user.save()
-					receiver.save()
-					Transaction.objects.create(sender=request.user, receiver=receiver, amount=amount)
-				messages.success(request, 'Payment Successful.')
-				return redirect('dashboard')
-			else:
-				messages.error(request, 'Insufficient Funds.')
+			receiver_username = form.cleaned_data.get('receiver_username')
+			amount = form.cleaned_data.get('amount')
+			try:
+				receiver = User.objects.get(username=receiver_username)
+				if request.user.balance >= amount:
+					with transaction.atomic():
+						request.user.balance -= amount
+						receiver.balance += amount
+						request.user.save()
+						receiver.save()
+						Transaction.objects.create(sender=request.user, receiver=receiver, amount=amount)
+					messages.success(request, 'Payment Successful.')
+					return redirect('dashboard')
+				else:
+					messages.error(request, 'Insufficient Funds.')
+			except User.DoesNotExist:
+				form.add_error('receiver_username', 'User Not Found')
 	else:
 		form = TransactionForm()
 	return render(request, 'send_payment.html', {'form': form})
@@ -89,11 +101,17 @@ def request_payment_view(request):
 	if request.method == 'POST':
 		form = RequestForm(request.POST)
 		if form.is_valid():
-			payment_request = form.save(commit=False)
-			payment_request.requester = request.user
-			payment_request.save()
-			messages.success(request, 'Payment Request Sent.')
-			return redirect
+			requestee_username = form.cleaned_data.get('requestee_username')
+			try:
+				requestee = User.objects.get(username=requestee_username)
+				payment_request = form.save(commit=False)
+				payment_request.requester = request.user
+				payment_request.requestee = requestee
+				payment_request.save()
+				messages.success(request, 'Payment Request Sent.')
+				return redirect('dashboard')
+			except User.DoesNotExist:
+				form.add_error('requestee_username', 'User not found')
 	else:
-		form = TransactionForm()
+		form = RequestForm()
 	return render(request, 'request_payment.html', {'form': form})

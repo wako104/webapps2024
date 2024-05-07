@@ -1,1 +1,18 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Request Payment</div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'request_payment' %}">
+                        {% csrf_token %}
+                        {% crispy form %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
