@@ -50,13 +50,26 @@ header {
     background-color: var(--primary-bg-color);
 }
 
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     list-style: none;
 }
 
 .nav-links li {
-    display: inline-block;
+    /*display: inline-block;*/
     padding: 0 20px;
+}
+
+.nav-links ul {
+    padding: 0;
 }
 
 .nav-links li a {
@@ -73,8 +86,8 @@ main {
     padding: 50px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     flex: 1;
     background-color: var(--primary-bg-color);
+    width: 100%;
 }

@@ -55,14 +55,14 @@ def logout_view(request):
 
 
 @login_required
-def dashboard(request):
+def dashboard_view(request):
 	transactions = Transaction.objects.filter(sender=request.user) | Transaction.objects.filter(receiver=request.user)
 	payment_requests = Request.objects.filter(requestee=request.user, fulfilled=False)
 	return render(request, 'dashboard.html', {'transactions': transactions, 'requests': payment_requests})
 
 
 @login_required
-def send_payment(request):
+def send_payment_view(request):
 	if request.method == 'POST':
 		form = TransactionForm(request.POST)
 		if form.is_valid():
@@ -85,7 +85,7 @@ def send_payment(request):
 
 
 @login_required
-def request_payment(request):
+def request_payment_view(request):
 	if request.method == 'POST':
 		form = RequestForm(request.POST)
 		if form.is_valid():
@@ -94,3 +94,6 @@ def request_payment(request):
 			payment_request.save()
 			messages.success(request, 'Payment Request Sent.')
 			return redirect
+	else:
+		form = TransactionForm()
+	return render(request, 'request_payment.html', {'form': form})

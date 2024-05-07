@@ -3,15 +3,11 @@
 {% block content %}
     <div class="card text-center">
             <div class="card-body">
-                <a href="{% url 'login' %}">
-                    <button class="btn btn-outline-primary btn-lg">Login</button>
-                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Login</a>
                 <hr>
                 <p class="card-text"> or </p>
                 <hr>
-                <a href="{% url 'register' %}">
-                    <button class="btn btn-outline-primary btn-lg mb-3">Sign Up</button>
-                </a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg mb-3">Sign Up</a>
                 <p class="card-text">To Continue</p>
             </div>
     </div>
