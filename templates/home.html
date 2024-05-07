@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% block title %}PayApp{% endblock %}
 {% block content %}
-    <div class="form-wrapper">
-        <a href="{% url 'login' %}">
-            <button type="submit" class="btn">Log In</button>
-        </a>
-        <div class="form-text">
-            <p class="text-divider">or</p>
-        </div>
-        <a href="{% url 'register' %}">
-            <button type="submit" class="btn">Sign up</button>
-        </a>
-        <div class="form-text">
-            <p>to continue</p>
-        </div>
+    <div class="card text-center">
+            <div class="card-body">
+                <a href="{% url 'login' %}">
+                    <button class="btn btn-outline-primary btn-lg">Login</button>
+                </a>
+                <hr>
+                <p class="card-text"> or </p>
+                <hr>
+                <a href="{% url 'register' %}">
+                    <button class="btn btn-outline-primary btn-lg mb-3">Sign Up</button>
+                </a>
+                <p class="card-text">To Continue</p>
+            </div>
     </div>
 {% endblock %}

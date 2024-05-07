@@ -1,13 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.db import transaction
 import requests
 
 from .models import User, Transaction, Request
-from .forms import UserRegistrationForm, TransactionForm, RequestForm
+from .forms import UserRegistrationForm, TransactionForm, RequestForm, UserLoginForm
 
 
 def home(request):
@@ -15,7 +14,7 @@ def home(request):
 
 
 def initial_balance(currency):
-	amount = 1000
+	amount = 500
 	conversion = requests.get(f'http://localhost:8000/api/convert/GBP/{currency}/{amount}/')
 	return conversion.json().get('converted_amount', amount)
 
@@ -37,7 +36,7 @@ def register_view(request):
 
 def login_view(request):
 	if request.method == 'POST':
-		form = AuthenticationForm(request, data=request.POST)
+		form = UserLoginForm(request, data=request.POST)
 		if form.is_valid():
 			username = form.cleaned_data.get('username')
 			password = form.cleaned_data.get('password')
@@ -46,7 +45,7 @@ def login_view(request):
 				login(request, user)
 				return redirect('dashboard')
 	else:
-		form = AuthenticationForm()
+		form = UserLoginForm()
 	return render(request, 'login.html', {'form': form})
 
 

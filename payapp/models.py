@@ -4,10 +4,12 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
 	CURRENCY = [
-		('EUR', 'Euro'),
 		('GBP', 'Great British Pound'),
+		('EUR', 'Euro'),
 		('USD', 'US Dollar')
 	]
+	first_name = models.CharField(max_length=30, blank=False, null=False)
+	last_name = models.CharField(max_length=30, blank=False, null=False)
 	email = models.EmailField(unique=True)
 	currency = models.CharField(max_length=3, choices=CURRENCY)
 	balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
