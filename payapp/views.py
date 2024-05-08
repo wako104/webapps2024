@@ -115,3 +115,48 @@ def request_payment_view(request):
 	else:
 		form = RequestForm()
 	return render(request, 'request_payment.html', {'form': form})
+
+
+@login_required
+def accept_request(request, pk):
+	try:
+		payment_request = Request.objects.get(pk=pk, requestee=request.user)
+		if payment_request.status == 'PENDING':
+			with transaction.atomic():
+				if request.user.balance >= payment_request.amount:
+					request.user.balance -= payment_request.amount
+					payment_request.requester.balance += payment_request.amount
+					request.user.save()
+					payment_request.requester.save()
+
+					Transaction.objects.create(
+						sender=request.user,
+						receiver=payment_request.requester,
+						amount=payment_request.amount
+					)
+
+					payment_request.status = 'ACCEPTED'
+					payment_request.save()
+					messages.success(request, 'Payment request accepted')
+				else:
+					messages.error(request, 'Insufficient funds')
+		else:
+			messages.info(request, 'Payment request is already processed!')
+	except Request.DoesNotExist:
+		messages.error(request, 'Payment request not found.')
+	return redirect('dashboard')
+
+
+@login_required
+def reject_request(request, pk):
+	try:
+		payment_request = Request.objects.get(pk=pk, requestee=request.user)
+		if payment_request.status == 'PENDING':
+			payment_request.status = 'REJECTED'
+			payment_request.save()
+			messages.success(request, 'Payment request rejected!')
+		else:
+			messages.info(request, 'Payment request is already processed!')
+	except Request.DoesNotExist:
+		messages.error(request, 'Payment request not found.')
+	return redirect('dashboard')
