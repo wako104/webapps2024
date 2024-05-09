@@ -18,12 +18,10 @@
                 <div class="card-header">Received Transactions</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for transaction in transactions %}
-                            {% if transaction.receiver == user %}
-                                <li class="list-group-item">
-                                    Received: {{ transaction.receiver_amount }} {{ user.currency }} from {{ transaction.sender }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
-                                </li>
-                            {% endif %}
+                        {% for transaction in received_transactions %}
+                            <li class="list-group-item">
+                                {{ transaction.receiver_amount }} {{ user.currency }} received from {{ transaction.sender }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
+                            </li>
                         {% empty %}
                             <li class="list-group-item">No transactions available</li>
                         {% endfor %}
@@ -36,23 +34,21 @@
                 <div class="card-header">Received Requests</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for request in requests %}
-                            {% if request.requestee == user %}
-                                <li class="list-group-item">
-                                    Received: {{ request.requestee_amount }} {{ user.currency }} requested from {{ request.requester }} on {{ request.created_at|date:'d-m-Y H:i' }}
-                                    {% if request.status == 'PENDING' %}
-                                        <span class="text-warning">{{ request.get_status_display }}</span>
-                                        <div class="mt-2">
-                                            <a href="{% url 'accept_request' request.pk %}" class="btn btn-success btn-sm">Accept</a>
-                                            <a href="{% url 'reject_request' request.pk %}" class="btn btn-danger btn-sm">Reject</a>
-                                        </div>
-                                    {% elif request.status == 'ACCEPTED' %}
-                                        <span class="text-success">{{ request.get_status_display }}</span>
-                                    {% else %}
-                                        <span class="text-danger">{{ request.get_status_display }}</span>
-                                    {% endif %}
-                                </li>
-                            {% endif %}
+                        {% for request in received_requests %}
+                            <li class="list-group-item">
+                                {{ request.requestee_amount }} {{ user.currency }} requested from {{ request.requester }} on {{ request.created_at|date:'d-m-Y H:i' }}
+                                {% if request.status == 'PENDING' %}
+                                    <span class="text-warning">{{ request.get_status_display }}</span>
+                                    <div class="mt-2">
+                                        <a href="{% url 'accept_request' request.pk %}" class="btn btn-success btn-sm">Accept</a>
+                                        <a href="{% url 'reject_request' request.pk %}" class="btn btn-danger btn-sm">Reject</a>
+                                    </div>
+                                {% elif request.status == 'ACCEPTED' %}
+                                    <span class="text-success">{{ request.get_status_display }}</span>
+                                {% else %}
+                                    <span class="text-danger">{{ request.get_status_display }}</span>
+                                {% endif %}
+                            </li>
                         {% empty %}
                             <li class="list-group-item">No Requests available</li>
                         {% endfor %}
@@ -67,12 +63,10 @@
                 <div class="card-header">Sent Transactions</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for transaction in transactions %}
-                            {% if transaction.sender == user %}
-                                <li class="list-group-item">
-                                    Sent: {{ transaction.sender_amount }} {{ user.currency }} to {{ transaction.receiver }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
-                                </li>
-                            {% endif %}
+                        {% for transaction in sent_transactions %}
+                            <li class="list-group-item">
+                                {{ transaction.sender_amount }} {{ user.currency }} sent to {{ transaction.receiver }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
+                            </li>
                         {% empty %}
                             <li class="list-group-item">No transactions available</li>
                         {% endfor %}
@@ -85,19 +79,17 @@
                 <div class="card-header">Sent Requests</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for request in requests %}
-                            {% if request.requester == user %}
-                                <li class="list-group-item">
-                                    Sent: {{ request.requester_amount }} {{ user.currency }} requested from {{ request.requestee }} on {{ request.created_at|date:'d-m-Y H:i' }}
-                                    {% if request.status == 'PENDING' %}
-                                        <span class="text-warning">{{ request.get_status_display }}</span>
-                                    {% elif request.status == 'ACCEPTED' %}
-                                        <span class="text-success">{{ request.get_status_display }}</span>
-                                    {% else %}
-                                        <span class="text-danger">{{ request.get_status_display }}</span>
-                                    {% endif %}
-                                </li>
-                            {% endif %}
+                        {% for request in sent_requests %}
+                            <li class="list-group-item">
+                                Request for {{ request.requester_amount }} {{ user.currency }} sent to {{ request.requestee }} on {{ request.created_at|date:'d-m-Y H:i' }}
+                                {% if request.status == 'PENDING' %}
+                                    <span class="text-warning">{{ request.get_status_display }}</span>
+                                {% elif request.status == 'ACCEPTED' %}
+                                    <span class="text-success">{{ request.get_status_display }}</span>
+                                {% else %}
+                                    <span class="text-danger">{{ request.get_status_display }}</span>
+                                {% endif %}
+                            </li>
                         {% empty %}
                             <li class="list-group-item">No Requests available</li>
                         {% endfor %}

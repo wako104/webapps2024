@@ -4,8 +4,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
 
 from .models import User, Transaction, Request
-from .utils import get_currency_symbol
-
 
 class UserRegistrationForm(UserCreationForm):
 	class Meta:
@@ -67,8 +65,9 @@ class TransactionForm(forms.ModelForm):
 		model = Transaction
 		fields = ['receiver_username', 'sender_amount']
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, currency_symbol, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.fields['sender_amount'].widget.attrs.update({'placeholder': f"{currency_symbol}"})
 		self.helper = FormHelper(self)
 		self.helper.layout = Layout(
 			Row(
@@ -90,8 +89,9 @@ class RequestForm(forms.ModelForm):
 		model = Request
 		fields = ['requestee_username', 'requester_amount']
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, currency_symbol, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.fields['requester_amount'].widget.attrs.update({'placeholder': f"{currency_symbol}"})
 		self.helper = FormHelper(self)
 		self.helper.layout = Layout(
 			Row(
@@ -99,7 +99,7 @@ class RequestForm(forms.ModelForm):
 				css_class='form-row mb-3'
 			),
 			Row(
-				Column('requester_amount', css_class='form-group', prefix='£'),
+				Column('requester_amount', css_class='form-group'),
 				css_class='form-row mb-3'
 			),
 			Submit('submit', 'Request Payment', css_class='btn btn-primary')

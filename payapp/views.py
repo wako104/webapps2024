@@ -59,12 +59,16 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-	transactions = Transaction.objects.filter(sender=request.user) | Transaction.objects.filter(receiver=request.user)
-	payment_requests = Request.objects.filter(requestee=request.user) | Request.objects.filter(requester=request.user)
+	sent_transactions = Transaction.objects.filter(sender=request.user)
+	received_transactions = Transaction.objects.filter(receiver=request.user)
+	sent_requests = Request.objects.filter(requester=request.user)
+	received_requests = Request.objects.filter(requestee=request.user)
 	currency_symbol = get_currency_symbol(request.user.currency)
 	return render(request, 'dashboard.html', {
-		'transactions': transactions,
-		'requests': payment_requests,
+		'sent_transactions': sent_transactions,
+		'received_transactions': received_transactions,
+		'sent_requests': sent_requests,
+		'received_requests': received_requests,
 		'currency_symbol': currency_symbol
 	})
 
@@ -102,7 +106,8 @@ def send_payment_view(request):
 			except User.DoesNotExist:
 				form.add_error('receiver_username', 'User Not Found')
 	else:
-		form = TransactionForm()
+		currency_symbol = get_currency_symbol(request.user.currency)
+		form = TransactionForm(currency_symbol)
 	return render(request, 'send_payment.html', {'form': form})
 
 
@@ -130,7 +135,8 @@ def request_payment_view(request):
 			except User.DoesNotExist:
 				form.add_error('requestee_username', 'User not found')
 	else:
-		form = RequestForm()
+		currency_symbol = get_currency_symbol(request.user.currency)
+		form = RequestForm(currency_symbol)
 	return render(request, 'request_payment.html', {'form': form})
 
 
