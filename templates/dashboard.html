@@ -2,7 +2,7 @@
 {% block title %}PayApp | Dashboard{% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ user.username }}</h2>
+    <h2>Welcome, {{ user.first_name }}</h2>
     <p>Current Balance: {{ currency_symbol }}{{ user.balance }}</p>
     <div class="row w-100 justify-content-around mb-5">
         <div class="col text-center">
@@ -21,7 +21,7 @@
                         {% for transaction in transactions %}
                             {% if transaction.receiver == user %}
                                 <li class="list-group-item">
-                                    Received: {{ transaction.amount }} {{ user.currency }} from {{ transaction.sender }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
+                                    Received: {{ transaction.receiver_amount }} {{ user.currency }} from {{ transaction.sender }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
                                 </li>
                             {% endif %}
                         {% empty %}
@@ -39,7 +39,7 @@
                         {% for request in requests %}
                             {% if request.requestee == user %}
                                 <li class="list-group-item">
-                                    Received: {{ request.amount }} {{ user.currency }} requested from {{ request.requester }} on {{ request.created_at|date:'d-m-Y H:i' }}
+                                    Received: {{ request.requestee_amount }} {{ user.currency }} requested from {{ request.requester }} on {{ request.created_at|date:'d-m-Y H:i' }}
                                     {% if request.status == 'PENDING' %}
                                         <span class="text-warning">{{ request.get_status_display }}</span>
                                         <div class="mt-2">
@@ -70,7 +70,7 @@
                         {% for transaction in transactions %}
                             {% if transaction.sender == user %}
                                 <li class="list-group-item">
-                                    Sent: {{ transaction.amount }} {{ user.currency }} to {{ transaction.receiver }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
+                                    Sent: {{ transaction.sender_amount }} {{ user.currency }} to {{ transaction.receiver }} on {{ transaction.created_at|date:'d-m-Y H:i' }}
                                 </li>
                             {% endif %}
                         {% empty %}
@@ -88,7 +88,7 @@
                         {% for request in requests %}
                             {% if request.requester == user %}
                                 <li class="list-group-item">
-                                    Sent: {{ request.amount }} {{ user.currency }} requested from {{ request.requestee }} on {{ request.created_at|date:'d-m-Y H:i' }}
+                                    Sent: {{ request.requester_amount }} {{ user.currency }} requested from {{ request.requestee }} on {{ request.created_at|date:'d-m-Y H:i' }}
                                     {% if request.status == 'PENDING' %}
                                         <span class="text-warning">{{ request.get_status_display }}</span>
                                     {% elif request.status == 'ACCEPTED' %}

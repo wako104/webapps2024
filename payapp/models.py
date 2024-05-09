@@ -21,7 +21,8 @@ class User(AbstractUser):
 class Transaction(models.Model):
 	sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_transactions')
 	receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_transactions')
-	amount = models.DecimalField(max_digits=10, decimal_places=2)
+	sender_amount = models.DecimalField(max_digits=10, decimal_places=2)
+	receiver_amount = models.DecimalField(max_digits=10, decimal_places=2)
 	created_at = models.DateTimeField(auto_now_add=True)
 	successful = models.BooleanField(default=True)
 
@@ -37,10 +38,11 @@ class Request(models.Model):
 	]
 	requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requested_payments')
 	requestee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_requests_received')
-	amount = models.DecimalField(max_digits=10, decimal_places=2)
+	requester_amount = models.DecimalField(max_digits=10, decimal_places=2)
+	requestee_amount = models.DecimalField(max_digits=10, decimal_places=2)
 	created_at = models.DateTimeField(auto_now_add=True)
 	fulfilled = models.BooleanField(default=False)
 	status = models.CharField(max_length=8, choices=STATUS_OPTIONS, default='PENDING')
 
 	def __str__(self):
-		return f"Payment request from {self.requester} to {self.requestee}: {self.amount}"
+		return f"Payment request from {self.requester} to {self.requestee}: {self.requester.currency}{self.requester_amount}"

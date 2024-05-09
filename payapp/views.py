@@ -75,16 +75,26 @@ def send_payment_view(request):
 		form = TransactionForm(request.POST)
 		if form.is_valid():
 			receiver_username = form.cleaned_data.get('receiver_username')
-			amount = form.cleaned_data.get('amount')
+			sender_amount = form.cleaned_data.get('sender_amount')
 			try:
 				receiver = User.objects.get(username=receiver_username)
-				if request.user.balance >= amount:
+				sender_currency = request.user.currency
+				receiver_currency = receiver.currency
+				receiver_amount = convert_currency(sender_currency, receiver_currency, sender_amount)
+
+				if request.user.balance >= sender_amount:
 					with transaction.atomic():
-						request.user.balance -= amount
-						receiver.balance += amount
+						request.user.balance -= sender_amount
+						receiver.balance += receiver_amount
 						request.user.save()
 						receiver.save()
-						Transaction.objects.create(sender=request.user, receiver=receiver, amount=amount)
+
+						Transaction.objects.create(
+							sender=request.user,
+							receiver=receiver,
+							sender_amount=sender_amount,
+							receiver_amount=receiver_amount
+						)
 					messages.success(request, 'Payment Successful.')
 					return redirect('dashboard')
 				else:
@@ -102,11 +112,18 @@ def request_payment_view(request):
 		form = RequestForm(request.POST)
 		if form.is_valid():
 			requestee_username = form.cleaned_data.get('requestee_username')
+			requester_amount = form.cleaned_data.get('requester_amount')
 			try:
 				requestee = User.objects.get(username=requestee_username)
+				requester_currency = request.user.currency
+				requestee_currency = requestee.currency
+				requestee_amount = convert_currency(requester_currency, requestee_currency, requester_amount)
+
 				payment_request = form.save(commit=False)
 				payment_request.requester = request.user
 				payment_request.requestee = requestee
+				payment_request.requester_amount = requester_amount
+				payment_request.requestee_amount = requestee_amount
 				payment_request.save()
 				messages.success(request, 'Payment Request Sent.')
 				return redirect('dashboard')
@@ -123,16 +140,20 @@ def accept_request(request, pk):
 		payment_request = Request.objects.get(pk=pk, requestee=request.user)
 		if payment_request.status == 'PENDING':
 			with transaction.atomic():
-				if request.user.balance >= payment_request.amount:
-					request.user.balance -= payment_request.amount
-					payment_request.requester.balance += payment_request.amount
+				requestee_amount = payment_request.requestee_amount
+				requester_amount = payment_request.requester_amount
+
+				if request.user.balance >= requestee_amount:
+					request.user.balance -= requestee_amount
+					payment_request.requester.balance += requester_amount
 					request.user.save()
 					payment_request.requester.save()
 
 					Transaction.objects.create(
 						sender=request.user,
 						receiver=payment_request.requester,
-						amount=payment_request.amount
+						sender_amount=requestee_amount,
+						receiver_amount=requester_amount
 					)
 
 					payment_request.status = 'ACCEPTED'

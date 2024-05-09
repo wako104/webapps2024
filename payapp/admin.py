@@ -9,10 +9,10 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-	list_display = ('sender', 'receiver', 'amount', 'created_at', 'successful')
+	list_display = ('sender', 'receiver', 'sender_amount', 'receiver_amount', 'created_at', 'successful')
 
 
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
-	list_display = ('requester', 'requestee', 'amount', 'created_at', 'fulfilled')
+	list_display = ('requester', 'requestee', 'requestee_amount', 'requester_amount', 'created_at', 'fulfilled')
 

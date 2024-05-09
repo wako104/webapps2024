@@ -12,8 +12,8 @@ def get_currency_symbol(currency_code):
 	return CURRENCY_SYMBOLS.get(currency_code, currency_code)
 
 
-def convert_currency(currency1, currency2, amount):
-	conversion = requests.get(f'http://localhost:8000/api/convert/{currency1}/{currency2}/{amount}/')
+def convert_currency(currency_from, currency_to, amount):
+	conversion = requests.get(f'http://localhost:8000/api/convert/{currency_from}/{currency_to}/{amount}/')
 	return conversion.json().get('converted_amount', amount)
 
 

@@ -65,7 +65,7 @@ class TransactionForm(forms.ModelForm):
 
 	class Meta:
 		model = Transaction
-		fields = ['receiver_username', 'amount']
+		fields = ['receiver_username', 'sender_amount']
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -76,7 +76,7 @@ class TransactionForm(forms.ModelForm):
 				css_class='form-row mb-3'
 			),
 			Row(
-				Column('amount', css_class='form-group'),
+				Column('sender_amount', css_class='form-group'),
 				css_class='form-row mb-3'
 			),
 			Submit('submit', 'Send Payment', css_class='btn btn-primary')
@@ -88,7 +88,7 @@ class RequestForm(forms.ModelForm):
 
 	class Meta:
 		model = Request
-		fields = ['requestee_username', 'amount']
+		fields = ['requestee_username', 'requester_amount']
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -99,7 +99,7 @@ class RequestForm(forms.ModelForm):
 				css_class='form-row mb-3'
 			),
 			Row(
-				Column('amount', css_class='form-group', prefix='£'),
+				Column('requester_amount', css_class='form-group', prefix='£'),
 				css_class='form-row mb-3'
 			),
 			Submit('submit', 'Request Payment', css_class='btn btn-primary')
