@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.shortcuts import redirect
 import requests
 
@@ -13,8 +15,8 @@ def get_currency_symbol(currency_code):
 
 
 def convert_currency(currency_from, currency_to, amount):
-	conversion = requests.get(f'http://localhost:8000/api/convert/{currency_from}/{currency_to}/{amount}/')
-	return conversion.json().get('converted_amount', amount)
+	conversion = requests.get(f'https://localhost:8000/api/convert/{currency_from}/{currency_to}/{amount}/', verify=False)
+	return Decimal(conversion.json().get('converted_amount', amount))
 
 
 def unauthenticated_user(view_func):

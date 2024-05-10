@@ -65,9 +65,9 @@ class TransactionForm(forms.ModelForm):
 		model = Transaction
 		fields = ['receiver_username', 'sender_amount']
 
-	def __init__(self, currency_symbol, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.fields['sender_amount'].widget.attrs.update({'placeholder': f"{currency_symbol}"})
+		# self.fields['sender_amount'].widget.attrs.update({'placeholder': f"{currency_symbol}"})
 		self.helper = FormHelper(self)
 		self.helper.layout = Layout(
 			Row(
@@ -89,9 +89,8 @@ class RequestForm(forms.ModelForm):
 		model = Request
 		fields = ['requestee_username', 'requester_amount']
 
-	def __init__(self, currency_symbol, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.fields['requester_amount'].widget.attrs.update({'placeholder': f"{currency_symbol}"})
 		self.helper = FormHelper(self)
 		self.helper.layout = Layout(
 			Row(

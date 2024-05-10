@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
 from django.db import transaction
 import requests
@@ -16,7 +17,7 @@ def home(request):
 
 def initial_balance(currency):
 	amount = 500
-	conversion = requests.get(f'http://localhost:8000/api/convert/GBP/{currency}/{amount}/')
+	conversion = requests.get(f'https://localhost:8000/api/convert/GBP/{currency}/{amount}/', verify=False)
 	return conversion.json().get('converted_amount', amount)
 
 
@@ -73,6 +74,7 @@ def dashboard_view(request):
 	})
 
 
+@csrf_protect
 @login_required
 def send_payment_view(request):
 	if request.method == 'POST':
@@ -106,11 +108,11 @@ def send_payment_view(request):
 			except User.DoesNotExist:
 				form.add_error('receiver_username', 'User Not Found')
 	else:
-		currency_symbol = get_currency_symbol(request.user.currency)
-		form = TransactionForm(currency_symbol)
+		form = TransactionForm()
 	return render(request, 'send_payment.html', {'form': form})
 
 
+@csrf_protect
 @login_required
 def request_payment_view(request):
 	if request.method == 'POST':
@@ -135,8 +137,7 @@ def request_payment_view(request):
 			except User.DoesNotExist:
 				form.add_error('requestee_username', 'User not found')
 	else:
-		currency_symbol = get_currency_symbol(request.user.currency)
-		form = RequestForm(currency_symbol)
+		form = RequestForm()
 	return render(request, 'request_payment.html', {'form': form})
 
 
